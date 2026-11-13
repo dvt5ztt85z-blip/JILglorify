@@ -69,6 +69,7 @@ textarea{min-height:92px;resize:vertical}
 .moods button.on{background:var(--accent);border-color:var(--accent)}
 .status{min-height:1.4em;text-align:right}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav[hidden]{display:none}
 nav .inner{display:flex;width:100%;max-width:640px;gap:6px}
 nav button{flex:1;border:none;background:none;padding:10px 4px;color:var(--muted);font-weight:500}
 nav button.on{color:var(--accent);font-weight:700;background:var(--soft)}
@@ -1416,7 +1417,6 @@ function renderToday(){
   refreshStreak();
   $app.querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
     const k = b.dataset.k; S.sub = k;
-    if (["quote","passage","devotional"].includes(k)) markViewed(str, k);
     render();
   });
 }
@@ -1447,14 +1447,18 @@ function renderSub(){
       <textarea id="heart">${esc(cur.heart_note)}</textarea>`;
   }
   $app.innerHTML = `
-    <button class="link" id="back">‹ Today</button>
-    <h1 style="margin-bottom:14px">${titles[k]}</h1>
+    <h1 style="margin:8px 0 14px">${titles[k]}</h1>
     ${body}
+    ${["quote","passage","devotional"].includes(k) ? `<button class="primary" id="complete" style="width:100%;margin-top:24px">Complete</button>` : ""}
+    ${["checkin","reflect"].includes(k) ? `<button class="primary" id="finish" style="width:100%;margin-top:24px">Done</button>` : ""}
     <div id="status" class="status small muted"></div>`;
 
-  document.getElementById("back").onclick = async () => {
+  const cb = document.getElementById("complete");
+  if (cb) cb.onclick = () => { markViewed(str, k); S.sub = null; render(); };
+  const fb = document.getElementById("finish");
+  if (fb) fb.onclick = async () => {
     clearTimeout(S.saveT); try { await collectAndSave(); } catch(e){}
-    stopTimer(); S.prayer = null; S.sub = null; render();
+    S.sub = null; render();
   };
   const verseText = v => v.verses.map(x => `<sup>${esc(x.verse)}</sup>${esc(String(x.text).replace(/\s+/g," ").trim())}`).join(" ");
   if (k === "quote") loadVerse(d.quote).then(v => {
@@ -1504,7 +1508,7 @@ function renderPrayerBox(){
     </div>
     <div class="row">
       ${i>0 ? `<button id="pback">Back</button>` : `<button id="cancel">Cancel</button>`}
-      ${last ? `<button class="primary" id="done">Done</button>` : `<button class="primary" id="next">Next</button>`}
+      ${last ? `<button class="primary" id="done">Complete</button>` : `<button class="primary" id="next">Next</button>`}
     </div>`;
   if (st.silence) {
     let left = st.silence; const tm = document.getElementById("tm");
@@ -1516,7 +1520,7 @@ function renderPrayerBox(){
   if (b("next")) b("next").onclick = () => { S.prayer.i++; renderPrayerBox(); };
   if (b("done")) b("done").onclick = async () => {
     S.cur.prayer_completed = true; S.cur.prayer_minutes = mins; S.prayer = null;
-    stopTimer(); await saveEntry(S.cur); renderPrayerBox();
+    stopTimer(); await saveEntry(S.cur); S.sub = null; render();
   };
 }
 
