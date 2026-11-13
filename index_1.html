@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16233B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JIL Glorify">
+<title>JIL Glorify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F4; --surface:#FFFFFF; --ink:#16233B; --muted:#5B6678; --line:#D5DCE4;
+  --accent:#2F5D8C; --accent-ink:#FFFFFF; --glow:#B7812A; --soft:#E3EBF3; --danger:#A4372E;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --sans:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0E1626; --surface:#17223A; --ink:#E8EDF5; --muted:#9DA9BD; --line:#2A3752;
+    --accent:#7FA8D6; --accent-ink:#0E1626; --glow:#E0B25A; --soft:#1F2D4A; --danger:#E58277;}
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+body{padding:env(safe-area-inset-top,0px) 0 calc(76px + env(safe-area-inset-bottom,0px))}
+#app{max-width:640px;margin:0 auto;padding:16px 18px}
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0;line-height:1.2}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin-bottom:8px}
+h3{font-size:1.1rem;margin-bottom:6px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+section{margin:0 0 28px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:8px 0 22px}
+.streak{background:var(--soft);border-radius:999px;padding:6px 14px;font-weight:600;white-space:nowrap;color:var(--ink)}
+.streak b{color:var(--glow)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.verse{font-family:var(--serif);font-size:1.22rem;line-height:1.6;border-left:3px solid var(--glow);padding:2px 0 2px 16px;margin:12px 0}
+.verse sup{font-family:var(--sans);font-size:.65rem;color:var(--muted);margin-right:3px}
+.dev{font-family:var(--serif);font-size:1.12rem;line-height:1.65}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:12px 16px;min-height:46px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.link{background:none;border:none;color:var(--muted);text-decoration:underline;padding:8px 4px;min-height:40px}
+button.danger{color:var(--danger)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 0}
+.choice{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 8px}
+.choice b{font-size:1.4rem;font-family:var(--serif);font-weight:500}
+.choice.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stage{background:var(--soft);border-radius:14px;padding:16px;margin:12px 0}
+.stage h3{margin-bottom:4px}
+.timer{font-family:var(--serif);font-size:2.4rem;text-align:center;margin:6px 0}
+.dots{display:flex;gap:6px;margin:0 0 10px}
+.dots i{height:5px;flex:1;border-radius:3px;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.prayer{font-family:var(--serif);font-size:1.2rem;line-height:1.6}
+.done-msg{color:var(--glow);font-weight:600}
+label{display:block;font-weight:600;margin:16px 0 6px}
+.qtype{font-weight:500;color:var(--muted);font-size:.85rem;margin-left:6px}
+textarea,input[type=email],input[type=password],input[type=search]{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+textarea{min-height:92px;resize:vertical}
+.moods{display:flex;gap:8px}
+.moods button{flex:1;font-size:1.5rem;padding:10px 0}
+.moods button.on{background:var(--accent);border-color:var(--accent)}
+.status{min-height:1.4em;text-align:right}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav .inner{display:flex;width:100%;max-width:640px;gap:6px}
+nav button{flex:1;border:none;background:none;padding:10px 4px;color:var(--muted);font-weight:500}
+nav button.on{color:var(--accent);font-weight:700;background:var(--soft)}
+.entry{display:block;width:100%;text-align:left;margin:0 0 10px;padding:14px 16px}
+.entry .top{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.entry .pv{color:var(--muted);font-size:.92rem;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.qa{margin:0 0 14px}
+.qa .q{font-weight:600}
+.qa .a{white-space:pre-wrap;font-family:var(--serif);font-size:1.08rem}
+.err{color:var(--danger);margin:10px 0}
+.center{min-height:70vh;display:flex;flex-direction:column;justify-content:center}
+@media (prefers-reduced-motion:no-preference){.verse,.stage{animation:rise .35s ease-out}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav id="nav" hidden><div class="inner">
+  <button data-tab="today">Today</button>
+  <button data-tab="journal">Journal</button>
+  <button data-tab="settings">Settings</button>
+</div></nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ================= CONFIG ================= */
+const SUPABASE_URL = "https://zifgipiqmzyiuwmeymie.supabase.co";
+const SUPABASE_KEY = "sb_publishable_dkfdbE01qjhpit74potTpw_A6mBS4Cq";
+// Bible text is loaded live from bible-api.com. Never typed by hand.
+// "webbe" = World English Bible, British Edition. Check that it shows "LORD". If not, try "kjv".
+const TRANSLATION = "webbe";
+
+/* ================= CONTENT ================= */
+// Fixed prompts, same every day
+const FIXED = {
+  adoration: "Praise God for who he is, in your own words.",
+  thanks: "Thank him for something specific from this week.",
+  confession: "Tell him where you’ve fallen short, and receive his forgiveness."
+};
+
+const THEMES = [
+  {
+    name: "Trust",
+    days: [
+      { ref: "Proverbs 3:5-6",
+        dev: "We usually trust God most easily when we already understand what he’s doing. This passage asks for trust that doesn’t depend on that. It sets “all your heart” against leaning on “your own understanding,” and it attaches a promise to acknowledging God in all our ways: he makes our paths straight. The passage doesn’t say the path will be easy or that we’ll see where it leads. It says to give him the whole of our trust and let him direct the way.",
+        p2: "Lord Jesus, I don’t understand everything in front of me today. I choose to trust you with all of it, not only the parts I can see. Show me how to acknowledge you in what I do today. Amen.",
+        theme: "Read the verses again slowly. Name one area where you’ve been leaning on your own understanding.",
+        request: "Ask him to direct your steps today. Bring one specific need.",
+        qs: ["What two things does verse 5 tell us to do, and what does it tell us not to do?",
+             "What do you think “acknowledge him” means in practice, beyond saying “God is good”?",
+             "What’s one decision this week where you’ve been relying on your own understanding?"] },
+      { ref: "Psalm 56:3-4",
+        dev: "David wrote this when he was afraid, and he doesn’t pretend otherwise. He says that when fear comes, he puts his trust in God. Trust here isn’t the absence of fear. It’s what you do with fear when it shows up. The passage also says what David’s trust rests on: God’s word, and the conclusion that mere people can’t do him lasting harm.",
+        p2: "Lord, I’m afraid of some things today. I’m not going to hide that from you. I bring them to you and choose to trust you. Amen.",
+        theme: "Name what you’re afraid of right now. Say it to God plainly.",
+        request: "Ask for help to trust him in that specific fear today.",
+        qs: ["What does David do when he is afraid?",
+             "Why do you think he says “what can flesh do to me”?",
+             "What fear is on your mind this week?"] },
+      { ref: "Isaiah 26:3-4",
+        dev: "These verses connect a steadfast mind with peace, and the reason given is that the person trusts in the Lord. The next verse calls the Lord an everlasting rock, which is a reason to trust him at all times, not just when life is calm. The passage ties peace to where our attention and trust rest, not to our circumstances.",
+        p2: "Lord, my mind runs in many directions. Fix it on you today. Give me the peace that comes from trusting you. Amen.",
+        theme: "Notice what your mind returns to most. Offer it to him.",
+        request: "Ask him to keep your mind steady today.",
+        qs: ["What is promised to the person whose mind is steadfast?",
+             "Why does verse 4 call God a rock?",
+             "What keeps pulling your mind away from trust?"] },
+      { ref: "Jeremiah 17:7-8",
+        dev: "Jeremiah compares the person who trusts the Lord to a tree planted by water. Heat comes, but its leaves stay green. The passage doesn’t say the heat never arrives. It says the tree isn’t anxious in a year of drought, and it keeps producing fruit. The image is about being rooted, which happens slowly and before the hard season comes.",
+        p2: "Lord, root me in you. When the heat comes, let me still be green. Amen.",
+        theme: "Ask what habits keep you rooted in him, and which have slipped.",
+        request: "Ask for steady growth, not just relief from hard times.",
+        qs: ["What does the tree not do when heat or drought comes?",
+             "What is the water in this image, in your own life?",
+             "What’s one habit you could restart this week?"] },
+      { ref: "Psalm 37:3-5",
+        dev: "This passage gives several commands: trust, do good, delight in the Lord, and commit your way to him. It then says he will act. Trust here is active, not passive. It’s paired with doing what’s right while we wait. The passage doesn’t promise we’ll get whatever we want. It points us to delight in God first.",
+        p2: "Lord, I commit my way to you today. Help me do what’s right and leave the outcome with you. Amen.",
+        theme: "Name one thing you’ve been trying to control. Commit it to him.",
+        request: "Ask him to act on it in his way and time.",
+        qs: ["What commands do these verses give?",
+             "What do you think it means to “commit your way” to the Lord?",
+             "What do you need to hand over today?"] },
+      { ref: "Mark 9:23-24",
+        dev: "A father asks Jesus to heal his son, and Jesus tells him all things are possible for the one who believes. The father’s answer is honest: he believes, and he asks Jesus to help his unbelief. Jesus doesn’t reject him for that mix. The honesty is the point. Trust can be real while still mixed with doubt, and the right response is to ask for help.",
+        p2: "Lord, I believe. Help my unbelief. Amen.",
+        theme: "Where is your trust mixed with doubt? Say it honestly.",
+        request: "Ask Jesus to strengthen your trust in that area.",
+        qs: ["What does the father say about his own faith?",
+             "How does Jesus respond to his honesty?",
+             "Where do you need to say “help my unbelief”?"] },
+      { ref: "Psalm 20:7",
+        dev: "Some trust in chariots and horses, which were the military power of the time. This verse says the people of God trust in the name of the Lord instead. Everyone trusts something. The verse asks what we’re counting on when things get hard: our resources, our plans, or God himself. It’s a good question to end the week with.",
+        p2: "Lord, I’m trusting in you, not in my own strength or plans. You are enough. Amen.",
+        theme: "Name the things you tend to rely on in place of God.",
+        request: "Ask him to keep you looking to him next week.",
+        qs: ["What are chariots and horses in this verse?",
+             "What are your “chariots and horses” today?",
+             "Looking back over the week, what has changed in how you trust?"] }
+    ]
+  }
+  // More themes go here later (Peace over anxiety, Gratitude, Forgiveness, ...)
+];
+const QTYPES = ["Observe", "Interpret", "Apply"];
+const MOODS = ["😞", "😕", "😐", "🙂", "😄"];
+
+/* ================= HELPERS ================= */
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $app = document.getElementById("app");
+const $nav = document.getElementById("nav");
+const S = { user: null, entries: [], tab: "today", detail: null, search: "", prayer: null, timer: null, saveT: null };
+
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function ymd(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function todayStr(){ return ymd(new Date()); }
+function dayNum(str){ const [y,m,d] = str.split("-").map(Number); return Math.floor(Date.UTC(y,m-1,d) / 86400000); }
+function contentFor(str){
+  // 2024-01-01 was a Monday. Each Monday starts a new week and the next theme.
+  const n = dayNum(str) - dayNum("2024-01-01");
+  const week = Math.floor(n / 7), day = ((n % 7) + 7) % 7;
+  const theme = THEMES[((week % THEMES.length) + THEMES.length) % THEMES.length];
+  return { theme, day, d: theme.days[day] };
+}
+function prettyDate(str){
+  const [y,m,d] = str.split("-").map(Number);
+  return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+}
+function entryFor(str){ return S.entries.find(e => e.entry_date === str); }
+function computeStreak(){
+  const done = new Set(S.entries.filter(e => e.prayer_completed).map(e => e.entry_date));
+  let n = dayNum(todayStr()); if (!done.has(todayStr())) n -= 1;
+  let c = 0;
+  const strOf = k => { const d = new Date(k*86400000); return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0"); };
+  while (done.has(strOf(n))) { c++; n--; }
+  return c;
+}
+
+/* ================= DATA ================= */
+async function loadEntries(){
+  const { data, error } = await sb.from("journal_entries").select("*").order("entry_date",{ascending:false});
+  if (error) { S.loadErr = error.message; return; }
+  S.loadErr = null; S.entries = data || [];
+}
+function blankEntry(str, ref){
+  return { entry_date:str, passage_ref:ref, prayer_minutes:null, prayer_completed:false, mood:null,
+           day_note:"", prayer_note:"", answers:[], heart_note:"" };
+}
+async function saveEntry(entry){
+  const row = { ...entry, user_id: S.user.id };
+  delete row.id; delete row.created_at; delete row.updated_at;
+  setStatus("Saving…");
+  const { data, error } = await sb.from("journal_entries").upsert(row,{onConflict:"user_id,entry_date"}).select().single();
+  if (error) { setStatus("Not saved: " + error.message, true); return false; }
+  const i = S.entries.findIndex(e => e.entry_date === data.entry_date);
+  if (i >= 0) S.entries[i] = data; else { S.entries.push(data); S.entries.sort((a,b)=> b.entry_date.localeCompare(a.entry_date)); }
+  setStatus("Saved"); refreshStreak();
+  return true;
+}
+function setStatus(msg, bad){ const el = document.getElementById("status"); if (el){ el.textContent = msg; el.className = "status small " + (bad ? "err" : "muted"); } }
+function refreshStreak(){ const el = document.getElementById("streak"); if (el) el.innerHTML = "🔥 <b>" + computeStreak() + "</b> day streak"; }
+
+/* ================= AUTH SCREEN ================= */
+function renderAuth(msg){
+  $nav.hidden = true;
+  $app.innerHTML = `
+    <div class="center">
+      <h1>JIL Glorify</h1>
+      <p class="muted">A short devotional, a prayer, and a journal that’s only yours.</p>
+      <label for="em">Email</label>
+      <input id="em" type="email" autocomplete="email" inputmode="email">
+      <label for="pw">Password <span class="muted small">(at least 6 characters)</span></label>
+      <input id="pw" type="password" autocomplete="current-password">
+      <div class="err" id="autherr">${esc(msg||"")}</div>
+      <div class="row">
+        <button class="primary" id="signin">Sign in</button>
+        <button id="signup">Create account</button>
+      </div>
+    </div>`;
+  const go = async (mode) => {
+    const email = document.getElementById("em").value.trim(), password = document.getElementById("pw").value;
+    const err = document.getElementById("autherr"); err.textContent = "";
+    if (!email || password.length < 6) { err.textContent = "Enter your email and a password of at least 6 characters."; return; }
+    const res = mode === "in" ? await sb.auth.signInWithPassword({email,password}) : await sb.auth.signUp({email,password});
+    if (res.error) { err.textContent = res.error.message; return; }
+    if (!res.data.session) { err.textContent = "Account created, but email confirmation is still turned on in Supabase. Turn it off (Authentication → Sign In / Providers → Email), then sign in."; return; }
+    S.user = res.data.user; await start();
+  };
+  document.getElementById("signin").onclick = () => go("in");
+  document.getElementById("signup").onclick = () => go("up");
+}
+
+/* ================= TODAY ================= */
+const verseCache = {};
+async function loadVerse(ref){
+  if (verseCache[ref]) return verseCache[ref];
+  try {
+    const cached = sessionStorage.getItem("v:" + TRANSLATION + ":" + ref);
+    if (cached) return (verseCache[ref] = JSON.parse(cached));
+  } catch(e){}
+  const r = await fetch("https://bible-api.com/" + encodeURIComponent(ref) + "?translation=" + TRANSLATION);
+  if (!r.ok) throw new Error("verse lookup failed");
+  const j = await r.json();
+  const out = { verses: j.verses || [], name: j.translation_name || TRANSLATION };
+  verseCache[ref] = out;
+  try { sessionStorage.setItem("v:" + TRANSLATION + ":" + ref, JSON.stringify(out)); } catch(e){}
+  return out;
+}
+
+function prayerSteps(c, mins){
+  const d = c.d;
+  if (mins === 2) return [{ t: "Pray", body: d.p2, prayer: true }];
+  const adore = { t: "Adoration", body: FIXED.adoration };
+  const theme = { t: "Today’s verse", body: d.theme };
+  const req = { t: "Requests", body: d.request };
+  if (mins === 5) return [adore, theme, req];
+  return [adore,
+    { t: "Thanksgiving", body: FIXED.thanks }, theme,
+    { t: "Silence", body: "Be still and listen.", silence: 60 },
+    { t: "Confession", body: FIXED.confession }, req,
+    { t: "Silence", body: "Be still and listen.", silence: 60 }];
+}
+
+function renderToday(){
+  const str = todayStr(), c = contentFor(str), d = c.d;
+  let e = entryFor(str);
+  if (!e) e = blankEntry(str, d.ref);
+  S.cur = e;
+  const answers = e.answers || [];
+  const ans = i => (answers[i] && answers[i].a) || "";
+  const qHtml = d.qs.map((q,i) => `
+    <label for="q${i}">${esc(q)}<span class="qtype">${QTYPES[i]}</span></label>
+    <textarea id="q${i}" data-q="${i}">${esc(ans(i))}</textarea>`).join("");
+
+  $app.innerHTML = `
+    <div class="head">
+      <div><h1>${esc(c.theme.name)}</h1><div class="muted">${esc(prettyDate(str))} · Day ${c.day+1} of 7</div></div>
+      <div class="streak" id="streak"></div>
+    </div>
+
+    <section>
+      <h2>${esc(d.ref)}</h2>
+      <div id="verse" class="verse muted">Loading verse…</div>
+      <p class="dev">${esc(d.dev)}</p>
+    </section>
+
+    <section>
+      <h2>Prayer</h2>
+      <div id="prayerbox"></div>
+    </section>
+
+    <section>
+      <h2>Check-in</h2>
+      <label>How are you today?</label>
+      <div class="moods" role="group" aria-label="Mood">
+        ${MOODS.map((m,i)=>`<button data-mood="${i+1}" class="${e.mood===i+1?"on":""}" aria-label="Mood ${i+1} of 5">${m}</button>`).join("")}
+      </div>
+      <label for="day">What happened today?</label>
+      <textarea id="day">${esc(e.day_note)}</textarea>
+      <label for="pn">Your prayer</label>
+      <textarea id="pn" placeholder="What did you pray about?">${esc(e.prayer_note)}</textarea>
+    </section>
+
+    <section>
+      <h2>Reflect</h2>
+      <p class="muted small">Everything here is optional.</p>
+      ${qHtml}
+      <label for="heart">What’s on your heart?</label>
+      <textarea id="heart">${esc(e.heart_note)}</textarea>
+    </section>
+    <div id="status" class="status small muted"></div>`;
+  refreshStreak();
+  renderPrayerBox();
+
+  loadVerse(d.ref).then(v => {
+    const el = document.getElementById("verse"); if (!el) return;
+    el.classList.remove("muted");
+    el.innerHTML = v.verses.map(x => `<sup>${esc(x.verse)}</sup>${esc(String(x.text).replace(/\s+/g," ").trim())}`).join(" ")
+      + `<div class="small muted" style="font-family:var(--sans);margin-top:6px">${esc(v.name)}</div>`;
+  }).catch(() => {
+    const el = document.getElementById("verse");
+    if (el) el.innerHTML = `Couldn’t load the verse text. Read <b>${esc(d.ref)}</b> in your own Bible.`;
+  });
+
+  const queue = () => { clearTimeout(S.saveT); setStatus("…"); S.saveT = setTimeout(collectAndSave, 1500); };
+  const collect = () => {
+    const cur = S.cur;
+    cur.day_note = document.getElementById("day").value;
+    cur.prayer_note = document.getElementById("pn").value;
+    cur.heart_note = document.getElementById("heart").value;
+    cur.passage_ref = d.ref;
+    cur.answers = d.qs.map((q,i) => ({ q, a: document.getElementById("q"+i).value })).filter(x => x.a.trim());
+  };
+  window.collectAndSave = async () => { collect(); await saveEntry(S.cur); };
+  S.collect = collect;
+  $app.querySelectorAll("textarea").forEach(t => t.addEventListener("input", queue));
+  $app.querySelectorAll("[data-mood]").forEach(b => b.onclick = () => {
+    const v = Number(b.dataset.mood); S.cur.mood = S.cur.mood === v ? null : v;
+    $app.querySelectorAll("[data-mood]").forEach(x => x.classList.toggle("on", Number(x.dataset.mood) === S.cur.mood));
+    collectAndSave();
+  });
+}
+
+function stopTimer(){ clearInterval(S.timer); S.timer = null; }
+
+function renderPrayerBox(){
+  const box = document.getElementById("prayerbox"); if (!box) return;
+  const c = contentFor(todayStr()), cur = S.cur;
+  stopTimer();
+  if (cur.prayer_completed && !S.prayer) {
+    box.innerHTML = `<div class="card"><p class="done-msg">✓ You prayed today${cur.prayer_minutes ? " (" + cur.prayer_minutes + " min)" : ""}.</p>
+      <button class="link" id="again">Pray again</button></div>`;
+    document.getElementById("again").onclick = () => { S.prayer = null; startPrayerPicker(); };
+    return;
+  }
+  if (!S.prayer) return startPrayerPicker();
+  const { steps, i, mins } = S.prayer, st = steps[i], last = i === steps.length - 1;
+  box.innerHTML = `
+    <div class="dots">${steps.map((_,k)=>`<i class="${k<=i?"on":""}"></i>`).join("")}</div>
+    <div class="stage">
+      <h3>${esc(st.t)}</h3>
+      <p class="${st.prayer?"prayer":""}">${esc(st.body)}</p>
+      ${st.silence ? `<div class="timer" id="tm">${st.silence}</div>` : ""}
+    </div>
+    <div class="row">
+      ${i>0 ? `<button id="back">Back</button>` : `<button id="cancel">Cancel</button>`}
+      ${last ? `<button class="primary" id="done">Done</button>` : `<button class="primary" id="next">Next</button>`}
+    </div>`;
+  if (st.silence) {
+    let left = st.silence; const tm = document.getElementById("tm");
+    S.timer = setInterval(() => { left--; if (tm) tm.textContent = Math.max(left,0); if (left <= 0) stopTimer(); }, 1000);
+  }
+  const b = id => document.getElementById(id);
+  if (b("back")) b("back").onclick = () => { S.prayer.i--; renderPrayerBox(); };
+  if (b("cancel")) b("cancel").onclick = () => { S.prayer = null; renderPrayerBox(); };
+  if (b("next")) b("next").onclick = () => { S.prayer.i++; renderPrayerBox(); };
+  if (b("done")) b("done").onclick = async () => {
+    S.collect(); S.cur.prayer_completed = true; S.cur.prayer_minutes = mins; S.prayer = null;
+    stopTimer(); await saveEntry(S.cur); renderPrayerBox();
+  };
+}
+
+function startPrayerPicker(){
+  const box = document.getElementById("prayerbox"); if (!box) return;
+  box.innerHTML = `
+    <p class="muted">How long do you want to pray?</p>
+    <div class="row">
+      ${[2,5,10].map(m => `<button class="choice" data-m="${m}"><b>${m}</b><span class="small">min</span></button>`).join("")}
+    </div>`;
+  box.querySelectorAll("[data-m]").forEach(b => b.onclick = () => {
+    const mins = Number(b.dataset.m);
+    S.prayer = { mins, i: 0, steps: prayerSteps(contentFor(todayStr()), mins) };
+    renderPrayerBox();
+  });
+}
+
+/* ================= JOURNAL ================= */
+function entryText(e){ return [e.passage_ref, e.day_note, e.prayer_note, e.heart_note, ...(e.answers||[]).map(a=>a.q+" "+a.a)].join(" ").toLowerCase(); }
+function preview(e){
+  return e.heart_note || e.day_note || e.prayer_note || ((e.answers||[])[0] && e.answers[0].a) || "";
+}
+function renderJournal(){
+  if (S.detail) return renderDetail(S.detail);
+  const q = S.search.trim().toLowerCase();
+  const list = S.entries.filter(e => !q || entryText(e).includes(q));
+  $app.innerHTML = `
+    <div class="head"><h1>Journal</h1></div>
+    <input id="search" type="search" placeholder="Search your entries" value="${esc(S.search)}" aria-label="Search your entries">
+    <div style="height:16px"></div>
+    ${list.length ? list.map(e => `
+      <button class="entry" data-d="${esc(e.entry_date)}">
+        <div class="top"><span>${esc(prettyDate(e.entry_date))}</span><span>${e.mood ? MOODS[e.mood-1] : ""}${e.prayer_completed ? " ✓" : ""}</span></div>
+        <div class="muted small">${esc(e.passage_ref)}</div>
+        <div class="pv">${esc(preview(e))}</div>
+      </button>`).join("")
+      : `<p class="muted">${q ? "No entries match that search." : "No entries yet. Write something on the Today tab and it will show up here."}</p>`}
+    ${S.loadErr ? `<p class="err">Couldn’t load entries: ${esc(S.loadErr)}</p>` : ""}`;
+  const s = document.getElementById("search");
+  s.oninput = () => { S.search = s.value; const pos = s.selectionStart; renderJournal(); const n = document.getElementById("search"); n.focus(); n.setSelectionRange(pos,pos); };
+  $app.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { S.detail = b.dataset.d; renderJournal(); window.scrollTo(0,0); });
+}
+function renderDetail(str){
+  const e = entryFor(str); if (!e) { S.detail = null; return renderJournal(); }
+  const block = (label, text) => text && text.trim() ? `<div class="qa"><div class="q">${esc(label)}</div><div class="a">${esc(text)}</div></div>` : "";
+  $app.innerHTML = `
+    <button class="link" id="back">‹ Journal</button>
+    <div class="head"><div><h1>${esc(prettyDate(e.entry_date))}</h1><div class="muted">${esc(e.passage_ref)}</div></div><div style="font-size:2rem">${e.mood ? MOODS[e.mood-1] : ""}</div></div>
+    ${e.prayer_completed ? `<p class="done-msg">✓ Prayed${e.prayer_minutes ? " for " + e.prayer_minutes + " min" : ""}</p>` : ""}
+    ${block("What happened today", e.day_note)}
+    ${block("Your prayer", e.prayer_note)}
+    ${(e.answers||[]).map(a => block(a.q, a.a)).join("")}
+    ${block("What’s on your heart", e.heart_note)}
+    <div style="height:12px"></div>
+    <button class="danger" id="del">Delete this entry</button>`;
+  document.getElementById("back").onclick = () => { S.detail = null; renderJournal(); };
+  document.getElementById("del").onclick = async () => {
+    if (!confirm("Delete this entry? This can’t be undone.")) return;
+    const { error } = await sb.from("journal_entries").delete().eq("id", e.id);
+    if (error) { alert("Couldn’t delete: " + error.message); return; }
+    S.entries = S.entries.filter(x => x.id !== e.id); S.detail = null; renderJournal();
+  };
+}
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  $app.innerHTML = `
+    <div class="head"><h1>Settings</h1></div>
+    <div class="card">
+      <h3>Your journal</h3>
+      <p class="muted small">Entries are stored in your account, so a new phone or cleared browser won’t lose them. Download a copy now and then as a backup.</p>
+      <button id="export">Download my journal</button>
+    </div>
+    <div style="height:16px"></div>
+    <div class="card">
+      <h3>Account</h3>
+      <p class="muted small">Signed in as ${esc(S.user.email)}</p>
+      <button id="out">Sign out</button>
+    </div>
+    <p class="muted small" style="margin-top:20px">Tip: on iPhone, tap Share, then Add to Home Screen. It opens like an app.</p>`;
+  document.getElementById("export").onclick = () => {
+    const blob = new Blob([JSON.stringify(S.entries, null, 2)], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "jil-glorify-journal-" + todayStr() + ".json"; document.body.appendChild(a); a.click(); a.remove();
+  };
+  document.getElementById("out").onclick = async () => { await sb.auth.signOut(); S.user = null; S.entries = []; renderAuth(); };
+}
+
+/* ================= ROUTER ================= */
+function render(){
+  if (S.tab !== "today") { stopTimer(); }
+  if (S.tab === "today") renderToday(); else if (S.tab === "journal") renderJournal(); else renderSettings();
+  $nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.tab === S.tab));
+  window.scrollTo(0,0);
+}
+$nav.querySelectorAll("button").forEach(b => b.onclick = async () => {
+  if (S.tab === "today" && window.collectAndSave && S.cur) { clearTimeout(S.saveT); try { await window.collectAndSave(); } catch(e){} }
+  S.tab = b.dataset.tab; S.detail = null; S.prayer = null; render();
+});
+async function start(){
+  $nav.hidden = false;
+  await loadEntries();
+  S.tab = "today"; render();
+}
+(async function init(){
+  const { data } = await sb.auth.getSession();
+  if (data.session) { S.user = data.session.user; await start(); } else renderAuth();
+})();
+</script>
+</body>
+</html>
